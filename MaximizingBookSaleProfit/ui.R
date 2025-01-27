@@ -8,6 +8,7 @@
 #
 
 library(shiny)
+library(bslib)
 
 # Define UI for application that draws a histogram
 fluidPage(
@@ -23,7 +24,10 @@ fluidPage(
 
     # Show a plot of the generated distribution
     mainPanel({
-
+      navset_tab(
+        navset_panel("Documentation", "This is Tab 1"),
+        navset_panel("Application", "This is Tab 2")
+      )
     })
   )
 )
