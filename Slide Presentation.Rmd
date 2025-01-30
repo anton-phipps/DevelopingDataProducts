@@ -1,0 +1,42 @@
+---
+title: "Product Pitch"
+output: ioslides_presentation
+date: "2025-01-30"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## Optimized Product Pricing
+
+If one was to sell a product or service based on a voluntary pricing scheme. Just like the books for the
+data science specialization, products can be offered in a pay what you want model. Using this data, it is
+possible to set a price point for a second edition that maximizes profit.
+
+## Assmuptions
+
+- The data will follow a Gamma Distribution
+- The sample is an actual representative sample
+- Those willing to pay more, will pay the lower price point
+
+## Sample Data
+
+
+```{r cars, echo = TRUE}
+data <- rgamma(30, shape = 5, scale = 4)
+summary(data)
+```
+
+## Slide with Plot
+
+With an example distribution, the goal would be to maximize the price, multiplied by the percentage of sales
+that one would attain at that price.
+
+```{r pressure}
+library(MASS)
+fit <- fitdistr(data, "gamma")
+hist(data, probability = TRUE, main = "Gamma Distribution Fit", xlab = "Value")
+      curve(dgamma(x, shape = fit$estimate["shape"], rate = fit$estimate["rate"]), add = TRUE, col = "blue")
+```
+

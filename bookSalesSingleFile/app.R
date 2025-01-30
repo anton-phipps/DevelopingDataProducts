@@ -10,7 +10,8 @@ ui <- fluidPage(
         choices = list("README" = "readme", "Project" = "project")
       ),
       hr(),
-      textInput("num_list", "Enter numbers actual sales numbers (comma-separated):", "1,2,3,4,5"),
+      textInput("num_list", "Enter numbers actual sales numbers (comma-separated):",
+                "9.75, 21.50, 0, 0, 14.50, 17.75, 20.0, 10.25, 7.25, 10.00, 20, 21.25, 14, 40.75, 8.50"),
       actionButton("fit", "Fit Gamma Distribution"),
       numericInput("point", "Enter point to calculate estimated percentage of sales above a certain value:", value = 3)
     ),
@@ -20,6 +21,7 @@ ui <- fluidPage(
         verbatimTextOutput("params"),
         verbatimTextOutput("percentage"),
         verbatimTextOutput("optimal_value"),
+        verbatimTextOutput("profit_per_hundred"),
         plotOutput("gammaPlot")
       ),
       conditionalPanel(
@@ -33,6 +35,8 @@ ui <- fluidPage(
 server <- function(input, output) {
   observeEvent(input$fit, {
     num_list <- as.numeric(unlist(strsplit(input$num_list, ",")))
+    num_list <- ifelse(num_list <= 0, 0.01, num_list)
+    
     fit <- fitdistr(num_list, "gamma")
 
     output$params <- renderPrint({
@@ -54,10 +58,16 @@ server <- function(input, output) {
         x * (1 - pgamma(x, shape = shape, rate = rate))
       }
       result <- optimize(objective_function, interval = c(0, max(num_list)), maximum = TRUE)
-      sh <- fit$estimate["shape"]
-      rt <- fit$estimate["rate"]
-      perc <- 1 - pgamma(result$maximum, shape = sh, rate = rt)
       paste("Value that maximizes x * (1 - F(x)):", round(result$maximum, 2))
+    })
+    
+    output$profit_per_hundred <- renderPrint({
+      objective_function <- function(x) {
+        x * (1 - pgamma(x, shape = fit$estimate["shape"], rate = fit$estimate["rate"]))
+      }
+      res <- optimize(objective_function, interval = c(0, max(num_list)), maximum = TRUE)
+      percentage <- 1 - pgamma(res$maximum, shape =  fit$estimate["shape"], rate =  fit$estimate["rate"])
+      paste("The estimated profit made from 100 units of sales is: $", round(percentage * res$maximum * 100, 2))
     })
 
     output$gammaPlot <- renderPlot({
