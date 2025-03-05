@@ -25,4 +25,4 @@ will be $1500 at that price point.
 As you can see, if you match a distribution, there will exist an optimal price point for which will can
 be established statistically.
 
-It should be noted, for the purpose of optimzation, values less or equal to 0 will be set to $ 0.01.
+It should be noted, for the purpose of optimization, values less or equal to 0 will be set to $ 0.01.
